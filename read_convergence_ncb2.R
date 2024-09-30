@@ -122,7 +122,7 @@ table(profiles$`Operation Type`) # check
 # Filter columns
 names(profiles)
 #profiles <-profiles[-c(2,3,6,7,10,15,20:21,23)] # delete non-important columns
-profiles<-profiles[c(1,4,5,8,9,11,14,17,24)]
+profiles<-profiles[c(1,4,5,8,9,11,14,17)]
 print(profiles)
 View(profiles)
 
@@ -187,7 +187,7 @@ names(g.ind)[names(g.ind)=="Unit of Measure"]<-"objectives_units"
 #summary(y$`Baseline Year`) #freq min baseline year
 
 # Create df to keep first (oldest) baseline year for each project
-                x <-g.ind[c(1,13)]                
+                x <-g.ind[c(1,12)]                
 x$`Baseline Year` <-as.integer(x$`Baseline Year`)
       x$min.cycle <-ave(x$`Baseline Year`,x$`Project Number`,FUN = min)
                 x <-x[x$`Baseline Year`==x$min.cycle,]
@@ -207,7 +207,7 @@ g.ind_u <- merge(x,g.ind,by =c("Project Number", "Baseline Year"),all.y = T) #Mi
 g.ind <- g.ind_u
 rm(g.ind_u)
 
-g.ind<-na.omit(g.ind)
+#g.ind<-na.omit(g.ind)
 
 ## Classify projects
 g.ind$health_gind     <-grepl("salud|health|saúde|morbi|morta|death|disease",paste(g.ind$Long.op.name,g.ind$objectives),ignore.case = T)
@@ -219,7 +219,7 @@ g.ind$morbilidad_gind <-grepl("mortalidad|mortality|mortalidade|morbilidad|morbi
 g.ind$eficiencia_gind <-grepl("eficiencia|efficiency|efficient",paste(g.ind$Long.op.name,g.ind$objectives),ignore.case = T)
 g.ind$equidad_gind    <-grepl("equidad|equity|equidade",paste(g.ind$Long.op.name,g.ind$objectives),ignore.case = T)
 
-#g.ind<-g.ind[-c(14:21)]
+g.ind<-g.ind[-c(14:21)]
 
 openxlsx::write.xlsx(g.ind,file = paste0(path,"/unique.g.indicators.xlsx"))
 write.csv(g.ind,file = paste0(path,"/unique.g.indicators.csv"), fileEncoding="UTF-8")
@@ -247,14 +247,14 @@ library(plyr)
 
 # Specific Development Objectives and Indicators
 #s.obj <-unique(outcomes[c(2,4)])
-s.ind <-unique(outcomes[c(2,4,10,13)])
+s.ind <-unique(outcomes[c(2,4,10:16)])
 #rm(outcomes)
 
 s.ind<-merge(profiles, s.ind[c(1:4)], by="Project Number", all.x = T)
-s.ind_u<-unique(s.ind[c(1:4,6:12)])
+s.ind_u<-unique(s.ind[c(1:4,6:11)])
 
 # Oldest cycle of reporting
-                y <-s.ind[c(1,12)]                
+                y <-s.ind[c(1,11)]                
 y$`Baseline Year` <-as.integer(y$`Baseline Year`)
       y$min.cycle <-ave(y$`Baseline Year`,y$`Project Number`,FUN = min)
                 y <-y[y$`Baseline Year`==y$min.cycle,]
@@ -265,10 +265,10 @@ summary(y$`Baseline Year`) #freq min baseline year
 
 s.ind_u <- merge(y,s.ind_u,by =c("Project Number", "Baseline Year"),all.y = T) #Min baseline year
 
-# Drop everything and keep g.ind as main dataframe
+# Drop everything and keep s.ind as main dataframe
 s.indx<-na.omit(s.ind_u)
 
-rm(s.ind, s.ind.uq)
+rm(s.ind_u)
 
 s.ind<-unique(s.indx[c(1,4,7:10)])
 rm(s.indx)
@@ -342,6 +342,7 @@ g.ind_x<-unique(g.ind[c(1,8,11)])
 s.ind_x <-merge(s.ind,g.ind[c(1,8,11)],by = c("Project Number"), all.x = T)
 #s.ind_x <-merge(g.ind_x,s.ind,by = c("Project Number"), all.x = T)
 
+s.uqx<-unique(s.ind_x)
 s.uq<-unique(s.ind_x[c(1,2,3,8,9)])
 
 s.uq<-s.uq[!is.na(s.uq$`outcomes`),] # eliminate operations with no information of outcomes
